@@ -1,0 +1,34 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    
+    
+}
+ img {
+    height: 150px;
+    width: 150px
+ }
+
+ #title {
+    text-align: center;
+    padding: 10px;
+ }
+
+#colHeader {
+    background-color: black;
+    color: white;
+    width: 400px;
+    padding: 10px;
+}
+
+#table {
+    text-align: center;
+    border: 2pt black solid;
+    
+}
+
+th , td {
+    border: 2pt black solid;
+    
+}
