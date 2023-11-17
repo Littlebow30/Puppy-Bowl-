@@ -3,6 +3,7 @@ const newPlayerFormContainer = document.getElementById('new-player-form');
 const playerTable = document.getElementById('table');
 const tableBody = document.getElementById('tableBody');
 
+
 const cohortName = '2306-ftb-mt-web-pt';
 const APIURL = `https://fsa-puppy-bowl.herokuapp.com/api/${cohortName}/`;
 
@@ -17,17 +18,10 @@ const fetchAllPlayers = async () => {
         const response = await fetch(playersURL);
         const result = await response.json();
         const players = result.data.players
-        console.log(players)
-        const allPlayers = players.map((values) => {
-            puppies +=`<tr>
-            <td>${values.name}</td>
-            <td>${values.breed}</td>
-            <td><img src="${values.imageUrl}" alt="${values.id}"></td>
-        </tr> `;
-                        
-        });
-        tableBody.innerHTML = puppies;
-        }
+        console.log('players', players)
+
+        return players
+    }
     catch (err) {
         console.error('Uh oh, trouble fetching players!', err);
     }
@@ -46,17 +40,29 @@ const fetchSinglePlayer = async (playerId) => {
         const singlePlayer = players.map((players) => {
             return tableBody.innerText += players.name
         })
-        console.log(singlePlayer)
+        console.log('single player', singlePlayer)
         
     } catch (err) {
         console.error(`Oh no, trouble fetching player #${playerId}!`, err);
     }
 };
 
-fetchSinglePlayer()
+
 
 const addNewPlayer = async (playerObj) => {
-    try {
+    const playersURL = `${APIURL}/players`
+    try { 
+        const response = await fetch(playersURL,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                playerObj,
+              }),
+            }
+          );
 
     } catch (err) {
         console.error('Oops, something went wrong with adding that player!', err);
@@ -64,8 +70,14 @@ const addNewPlayer = async (playerObj) => {
     };
 
 const removePlayer = async (playerId) => {
+    const playersURL = `${APIURL}/players`
     try {
-
+        const response = await fetch(playersURL, {
+            method: 'Delete',
+        }
+        );
+        const result = await response.json();
+        console.log(result);
     } catch (err) {
         console.error(
             `Whoops, trouble removing player #${playerId} from the roster!`,
@@ -75,9 +87,11 @@ const removePlayer = async (playerId) => {
     } ;
 
 /**
+ * (done)
  * It takes an array of player objects, loops through them, and creates a string of HTML for each
  * player, then adds that string to a larger string of HTML that represents all the players. 
  * 
+ * (Done)
  * Then it takes that larger string of HTML and adds it to the DOM. 
  * 
  * It also adds event listeners to the buttons in each player card. 
@@ -95,9 +109,22 @@ const removePlayer = async (playerId) => {
  * @returns the playerContainerHTML variable.
  */
 const renderAllPlayers = (playerList) => {
+    let puppies ='';
+    
     try {
+        const allPlayers = playerList.map((values) => {
+            const tableRow  = document.createElement('tr')
+            tableRow.innerHTML = `<td> <button id="btn">${values.name}</button> </td>
+            <td>${values.breed}</td>
+            <td><img src="${values.imageUrl}" alt="${values.id}"></td>`;
+
+            tableBody.appendChild(tableRow)  
+        });
+    }
+        // const clickButton = getElementById('btn').addEventListener('click', 
+        // 
         
-    } catch (err) {
+    catch (err) {
         console.error('Uh oh, trouble rendering players!', err);
     }
 };
@@ -108,7 +135,16 @@ const renderAllPlayers = (playerList) => {
  * fetches all players from the database, and renders them to the DOM.
  */
 const renderNewPlayerForm = () => {
+
     try {
+        newPlayerFormContainer.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            addNewPlayer();
+        })
+        
         
     } catch (err) {
         console.error('Uh oh, trouble rendering the new player form!', err);
